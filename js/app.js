@@ -49,45 +49,52 @@ hideButton.addEventListener("click", function () {
 
 
 
+async function purchasePlaneTicket(passengerInfo, flightInfo) {
+    try {
+        const response = await fetch('https://airline-api.com/tickets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer YOUR_API_TOKEN'
+            },
+            body: JSON.stringify({
+                passengerInfo,
+                flightInfo
+            })
+        });
 
-document.getElementById('showTicketsBtn').addEventListener('click', function () {
-    let table = document.getElementById('ticketsTable');
-    if (table.style.display === 'none') {
-        table.style.display = 'table';
-        document.getElementById('showTicketsBtn').innerText = 'Bilet Tanlashni Yopish';
-    } else {
-        table.style.display = 'none';
-        document.getElementById('showTicketsBtn').innerText = 'Bilet Tanlash';
+        if (response.ok) {
+            const ticketData = await response.json();
+            console.log('Ticket purchased successfully:', ticketData);
+            return ticketData;
+        } else {
+            const errorData = await response.json();
+            console.error('Failed to purchase ticket:', errorData);
+            throw new Error('Failed to purchase ticket');
+        }
+    } catch (error) {
+        console.error('Error purchasing ticket:', error);
+        throw error;
     }
-});
+}
 
+const passengerInfo = {
+    name: 'John Doe',
+    email: 'john.doe@example.com',
 
-let tickets = [
-    { type: 'Ekonom', price: 100 },
-    { type: 'Biznes', price: 200 },
-    { type: 'Birinchi klass', price: 300 }
-];
+};
 
-let tbody = document.querySelector('#ticketsTable tbody');
+const flightInfo = {
+    flightNumber: 'ABC123',
+    departureDate: '2024-05-15',
 
-tickets.forEach(function (ticket) {
-    let row = document.createElement('tr');
-    let typeCell = document.createElement('td');
-    typeCell.textContent = ticket.type;
-    let priceCell = document.createElement('td');
-    priceCell.textContent = ticket.price + ' USD';
-    let selectCell = document.createElement('td');
-    let selectBtn = document.createElement('button');
-    selectBtn.textContent = 'Tanlash';
-    selectBtn.addEventListener('click', function () {
-        alert('Siz ' + ticket.type + ' klassdagi bilet tanladingiz. Narxi: ' + ticket.price + ' USD');
+};
+
+purchasePlaneTicket(passengerInfo, flightInfo)
+    .then(ticketData => {
+    })
+    .catch(error => {
     });
-    selectCell.appendChild(selectBtn);
-    row.appendChild(typeCell);
-    row.appendChild(priceCell);
-    row.appendChild(selectCell);
-    tbody.appendChild(row);
-});
 
 
 
